@@ -20,4 +20,7 @@ type UserRepository interface {
 }
 
 type UserUseCase interface {
+	FetchUserById(ctx context.Context)
+	FetchUserByEmail(ctx context.Context)
+	StoreUser(context.Context, *User) (*User, error)
 }
