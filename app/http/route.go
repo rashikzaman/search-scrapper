@@ -2,6 +2,7 @@ package http
 
 import (
 	"fmt"
+	"rashik/search-scrapper/app/middleware"
 	"rashik/search-scrapper/app/repository"
 	"rashik/search-scrapper/app/usecase"
 	"rashik/search-scrapper/db"
@@ -26,17 +27,22 @@ func InitRouter() {
 
 	apiGroup := r.Group("/api")
 	{
-		v1Group := apiGroup.Group("/v1")
+		userRepository := repository.NewMysqlUserRepository(db.GetDb())
+		userUseCase := usecase.NewUserUseCase(userRepository)
+		handler := NewUserHttpHandler(userUseCase)
+
+		authGroup := apiGroup.Group("/auth")
 		{
-			userGroup := v1Group.Group("/auth")
-			{
-				userRepository := repository.NewMysqlUserRepository(db.GetDb())
-				userUseCase := usecase.NewUserUseCase(userRepository)
-				handler := NewUserHttpHandler(userUseCase)
-				userGroup.POST("/signup", handler.SignUp())
-			}
+			authGroup.POST("/signup", handler.SignUp())
+			authGroup.POST("/login", handler.Login())
 		}
+
+		userGroup := apiGroup.Group("/user", middleware.AuthorizeJwt())
+		{
+			userGroup.GET("/", handler.GetUser())
+		}
+
 	}
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run() // listen	 and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

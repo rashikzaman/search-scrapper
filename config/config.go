@@ -54,3 +54,7 @@ func (c Config) GetDatabaseConfig() DatabaseConfig {
 		Password:     c.getEnv("POSTGRES_DB_PASSWORD", "test"),
 	}
 }
+
+func (c Config) GetJwtSecretKey() string {
+	return c.getEnv("JWT_SECRET", "aaaa###")
+}
