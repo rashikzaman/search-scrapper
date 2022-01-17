@@ -8,5 +8,6 @@ import (
 func Migrate() {
 	db.GetDb().AutoMigrate(
 		domain.User{},
+		domain.Keyword{},
 	)
 }

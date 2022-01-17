@@ -11,6 +11,7 @@ type User struct {
 	Password  *string   `json:"password" gorm:"type:varchar(255);not null"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Keyword   []Keyword
 }
 
 type UserRepository interface {
