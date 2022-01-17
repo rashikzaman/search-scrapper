@@ -14,13 +14,15 @@ type User struct {
 }
 
 type UserRepository interface {
-	FetchUserById(ctx context.Context)
-	FetchUserByEmail(ctx context.Context)
+	FetchUserById(ctx context.Context, id int) (*User, error)
+	FetchUserByEmail(ctx context.Context, email string) (*User, error)
 	StoreUser(context.Context, *User) (*User, error)
 }
 
 type UserUseCase interface {
-	FetchUserById(ctx context.Context)
-	FetchUserByEmail(ctx context.Context)
+	FetchUserById(ctx context.Context, id int) (*User, error)
+	FetchUserByEmail(ctx context.Context, email string) (*User, error)
 	StoreUser(context.Context, *User) (*User, error)
+	HashPassword(string) (string, error)
+	CheckPasswordHash(string, string) bool
 }
