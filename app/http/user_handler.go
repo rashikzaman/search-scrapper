@@ -5,6 +5,7 @@ import (
 	"rashik/search-scrapper/app/auth"
 	"rashik/search-scrapper/app/domain"
 	"rashik/search-scrapper/config"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -80,9 +81,17 @@ func (a *UserHttpHandler) Login() gin.HandlerFunc {
 
 func (a *UserHttpHandler) GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userId := c.MustGet("userId").(string)
-		c.JSON(200, gin.H{
-			"hello": userId,
-		})
+		id := c.MustGet("userId").(string)
+		userId, err := strconv.Atoi(id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "Internal Server Error, please try again later")
+			return
+		}
+		user, err := a.UserUseCase.FetchUserById(c, userId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, "Internal Server Error, please try again later")
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"email": user.Email})
 	}
 }
