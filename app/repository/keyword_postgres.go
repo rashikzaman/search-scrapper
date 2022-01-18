@@ -35,3 +35,9 @@ func (m *PostgresKeywordRepository) StoreKeywords(ctx context.Context, keywords 
 	result := m.Conn.Create(&words)
 	return words, result.Error
 }
+
+func (m *PostgresKeywordRepository) FetchPendingKeyword(ctx context.Context) (*domain.Keyword, error) {
+	var keyword *domain.Keyword
+	result := m.Conn.Where("status = ?", "pending").First(&keyword)
+	return keyword, result.Error
+}

@@ -22,6 +22,7 @@ type Keyword struct {
 type KeywordRepository interface {
 	StoreKeywords(context.Context, [][]string, User) ([]*Keyword, error)
 	FetchKeywordsForUser(context.Context, User) ([]*Keyword, error)
+	FetchPendingKeyword(ctx context.Context) (*Keyword, error)
 }
 
 type KeywordUseCase interface {
