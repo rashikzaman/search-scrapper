@@ -8,7 +8,7 @@ import (
 type User struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	Email     *string   `json:"email" gorm:"unique;type:varchar(255);not null"`
-	Password  *string   `json:"password" gorm:"type:varchar(255);not null"`
+	Password  *string   `json:"-" gorm:"type:varchar(255);not null"` //prevent password appearing in json
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 	Keyword   []Keyword
