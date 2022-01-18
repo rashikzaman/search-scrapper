@@ -33,7 +33,7 @@ func InitRouter() {
 		userHandler := NewUserHttpHandler(userUseCase)
 
 		keywordRepository := repository.NewPostgresKeywordRepository(db.GetDb())
-		keywordUseCase := usecase.NewKeywordUseCase(keywordRepository)
+		keywordUseCase := usecase.NewKeywordUseCase(keywordRepository, userUseCase)
 		keywordHandler := NewKeywordHttpHandler(keywordUseCase)
 
 		authGroup := apiGroup.Group("/auth")

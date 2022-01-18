@@ -20,7 +20,7 @@ type Keyword struct {
 }
 
 type KeywordRepository interface {
-	StoreKeywords(context.Context, [][]string, uint) ([]*Keyword, error)
+	StoreKeywords(context.Context, [][]string, User) ([]*Keyword, error)
 	FetchKeywordsForUser(context.Context, int) ([]*Keyword, error)
 }
 

@@ -23,12 +23,12 @@ func (m *PostgresKeywordRepository) FetchKeywordsForUser(ctx context.Context, id
 	return nil, nil
 }
 
-func (m *PostgresKeywordRepository) StoreKeywords(ctx context.Context, keywords [][]string, userId uint) ([]*domain.Keyword, error) {
+func (m *PostgresKeywordRepository) StoreKeywords(ctx context.Context, keywords [][]string, user domain.User) ([]*domain.Keyword, error) {
 	var words = []*domain.Keyword{}
 	for i := 0; i < len(keywords); i++ {
 		words = append(words, &domain.Keyword{
 			Word:      keywords[i][0],
-			UserId:    userId,
+			User:      user,
 			Status:    "pending",
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now()})

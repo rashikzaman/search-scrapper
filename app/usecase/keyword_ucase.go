@@ -9,11 +9,13 @@ import (
 
 type KeywordRepository struct {
 	KeywordRepository domain.KeywordRepository
+	UserUseCase       domain.UserUseCase
 }
 
-func NewKeywordUseCase(a domain.KeywordRepository) domain.KeywordUseCase {
+func NewKeywordUseCase(a domain.KeywordRepository, b domain.UserUseCase) domain.KeywordUseCase {
 	return &KeywordRepository{
 		KeywordRepository: a,
+		UserUseCase:       b,
 	}
 }
 
@@ -30,7 +32,8 @@ func (m *KeywordRepository) StoreKeywordsFromFile(ctx context.Context, file io.R
 		return nil, err
 	}
 	if len(records) > 0 {
-		result, err := m.KeywordRepository.StoreKeywords(ctx, records, uint(userId))
+		user, _ := m.UserUseCase.FetchUserById(ctx, userId)
+		result, err := m.KeywordRepository.StoreKeywords(ctx, records, *user)
 		return result, err
 	}
 	return nil, nil

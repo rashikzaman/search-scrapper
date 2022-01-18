@@ -92,6 +92,6 @@ func (a *UserHttpHandler) GetUser() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, "Internal Server Error, please try again later")
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"email": user.Email})
+		c.JSON(http.StatusOK, user)
 	}
 }
