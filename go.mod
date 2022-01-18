@@ -3,6 +3,7 @@ module rashik/search-scrapper
 go 1.16
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/validator/v10 v10.10.0 // indirect
@@ -16,6 +17,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
+	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d // indirect
 	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
