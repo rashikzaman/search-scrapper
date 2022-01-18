@@ -38,7 +38,7 @@ func (a *KeywordHttpHandler) StoreKeywords() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.MustGet("userId").(string)
 		userId, err := strconv.Atoi(id)
-		file, _, err := c.Request.FormFile("Filename")
+		file, _, err := c.Request.FormFile("file")
 		if err != nil {
 			fmt.Println("Unable to open the file", err)
 		}
