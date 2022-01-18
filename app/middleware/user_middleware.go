@@ -7,7 +7,6 @@ import (
 	"rashik/search-scrapper/config"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
 )
 
 func AuthorizeJwt() gin.HandlerFunc {
@@ -21,11 +20,16 @@ func AuthorizeJwt() gin.HandlerFunc {
 			tokenString := authHeader[len(BEARER_SCHEMA)+1:]
 			token, err := auth.ValidateJwtToken(tokenString, config.GetConfig().GetJwtSecretKey())
 			if err != nil || !token.Valid {
-				c.AbortWithStatus(http.StatusUnauthorized)
+				c.JSON(http.StatusUnauthorized, err.Error())
+				c.Abort()
 			} else {
-				claims := token.Claims.(jwt.MapClaims)
-				c.Set("userId", claims["UserId"])
-				c.Next()
+				if claims, ok := token.Claims.(*auth.CustomClaims); ok && token.Valid {
+					c.Set("userId", claims.UserId)
+					c.Next()
+				} else {
+					c.JSON(http.StatusUnauthorized, ok)
+					c.Abort()
+				}
 			}
 		}
 	}
