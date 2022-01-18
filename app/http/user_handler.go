@@ -63,7 +63,10 @@ func (a *UserHttpHandler) Login() gin.HandlerFunc {
 			c.JSON(http.StatusBadRequest, gin.H{"errors": err.Error()})
 			return
 		} else {
-			user, _ := a.UserUseCase.FetchUserByEmail(c, json.Email)
+			user, err := a.UserUseCase.FetchUserByEmail(c, json.Email)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, "Email or Password Doesn't match")
+			}
 			passwordMatched := a.UserUseCase.CheckPasswordHash(json.Password, *user.Password)
 			if passwordMatched {
 				token, err := auth.CreateJwtAuthToken(int(user.ID), config.GetConfig().GetJwtSecretKey())
@@ -71,9 +74,11 @@ func (a *UserHttpHandler) Login() gin.HandlerFunc {
 					c.JSON(http.StatusInternalServerError, "Internal Server Error, please try again later")
 					return
 				} else {
-					c.JSON(http.StatusCreated, gin.H{"access_key": token})
+					c.JSON(http.StatusOK, gin.H{"access_key": token, "email": user.Email})
 					return
 				}
+			} else {
+				c.JSON(http.StatusUnauthorized, "Email or Password Doesn't match")
 			}
 		}
 	}
