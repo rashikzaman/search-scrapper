@@ -44,7 +44,7 @@ func InitRouter() {
 
 		userGroup := apiGroup.Group("/user", middleware.AuthorizeJwt())
 		{
-			userGroup.GET("/", userHandler.GetUser())
+			userGroup.GET("/keywords", keywordHandler.FetchUserKeywords())
 			userGroup.POST("/keywords", keywordHandler.StoreKeywords())
 		}
 	}

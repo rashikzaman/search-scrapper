@@ -14,14 +14,14 @@ type Keyword struct {
 	SearchResult string    `json:"search_result"`
 	Status       string    `json:"status"`
 	UserId       uint      `json:"user_id"`
-	User         User      `gorm:"foreignKey:UserId;references:ID"`
+	User         User      `json:"-" gorm:"foreignKey:UserId;references:ID"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type KeywordRepository interface {
 	StoreKeywords(context.Context, [][]string, User) ([]*Keyword, error)
-	FetchKeywordsForUser(context.Context, int) ([]*Keyword, error)
+	FetchKeywordsForUser(context.Context, User) ([]*Keyword, error)
 }
 
 type KeywordUseCase interface {

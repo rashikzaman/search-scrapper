@@ -20,6 +20,20 @@ func NewKeywordHttpHandler(kw domain.KeywordUseCase) *KeywordHttpHandler {
 	return handler
 }
 
+func (a *KeywordHttpHandler) FetchUserKeywords() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		id := c.MustGet("userId").(string)
+		userId, err := strconv.Atoi(id)
+		result, err := a.KeywordUserCase.FetchKeywordsForUser(c, userId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		} else {
+			c.JSON(http.StatusOK, result)
+		}
+	}
+}
+
 func (a *KeywordHttpHandler) StoreKeywords() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.MustGet("userId").(string)

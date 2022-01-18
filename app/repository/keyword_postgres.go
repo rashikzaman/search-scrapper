@@ -16,11 +16,10 @@ func NewPostgresKeywordRepository(Conn *gorm.DB) domain.KeywordRepository {
 	return &PostgresKeywordRepository{Conn}
 }
 
-func (m *PostgresKeywordRepository) FetchKeywordsForUser(ctx context.Context, id int) ([]*domain.Keyword, error) {
-	//user, err := m.FetchUserById(ctx, id)
-	//return user, err
-
-	return nil, nil
+func (m *PostgresKeywordRepository) FetchKeywordsForUser(ctx context.Context, user domain.User) ([]*domain.Keyword, error) {
+	var keywords []*domain.Keyword
+	result := m.Conn.Where("user_id = ?", user.ID).Find(&keywords)
+	return keywords, result.Error
 }
 
 func (m *PostgresKeywordRepository) StoreKeywords(ctx context.Context, keywords [][]string, user domain.User) ([]*domain.Keyword, error) {
