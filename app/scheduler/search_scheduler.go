@@ -43,8 +43,7 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 				if err != nil {
 					fmt.Println("Err", err)
 				} else {
-					fmt.Println("Result", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalAdword, searchResult.TotalLink)
-					fmt.Println("User agent", userAgent)
+					PrintSearchResult(searchResult, userAgent)
 					filepath := fmt.Sprintf("./public/results/result_%d.html", result.ID)
 					htmlFilePath := strings.TrimPrefix(filepath, ".")
 					err := repo.UpdateKeyword(ctx, result.ID, "completed", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalLink, htmlFilePath)
@@ -62,14 +61,22 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 	}()
 }
 
+func PrintSearchResult(searchResult *SearchResult, userAgent string) {
+	fmt.Println("Result", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalAdword, searchResult.TotalLink)
+	fmt.Println("User agent", userAgent)
+}
+
 func GetSearchResult(keyword string, userAgent string) (*SearchResult, error) {
 	data, err := GetHtml(keyword, userAgent)
-
 	if err != nil {
 		fmt.Printf("Cannnot read html: %d", err)
 		return nil, err
 	}
+	result, err := ParseHtml(data)
+	return result, err
+}
 
+func ParseHtml(data []byte) (*SearchResult, error) {
 	reader := bytes.NewReader(data)
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
@@ -85,7 +92,6 @@ func GetSearchResult(keyword string, userAgent string) (*SearchResult, error) {
 		TotalLink:         strlink,
 		HtmlBody:          data,
 	}
-
 	return result, nil
 }
 
@@ -99,7 +105,6 @@ func GetHtml(keyword string, userAgent string) ([]byte, error) {
 	}
 
 	req.Header.Set("User-Agent", userAgent)
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, nil
