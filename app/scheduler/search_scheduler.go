@@ -46,9 +46,15 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 					fmt.Println("Result", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalAdword, searchResult.TotalLink)
 					fmt.Println("User agent", userAgent)
 					filepath := fmt.Sprintf("./public/results/result_%d.html", result.ID)
-					err := storeHtml(filepath, searchResult.HtmlBody)
+					htmlFilePath := strings.TrimPrefix(filepath, ".")
+					err := repo.UpdateKeyword(ctx, result.ID, "completed", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalLink, htmlFilePath)
 					if err != nil {
-						fmt.Println("error creating html file", err)
+						fmt.Println("Error updating keyword", err)
+					} else {
+						err := storeHtml(filepath, searchResult.HtmlBody)
+						if err != nil {
+							fmt.Println("error creating html file", err)
+						}
 					}
 				}
 			}
@@ -85,9 +91,9 @@ func GetSearchResult(keyword string, userAgent string) (*SearchResult, error) {
 
 func GetHtml(keyword string, userAgent string) ([]byte, error) {
 	client := &http.Client{}
-	keyword = strings.ReplaceAll(keyword, " ", "+")
+	keyword = strings.ReplaceAll(keyword, " ", "+") //replaincing all whitespace with +
 	fmt.Println("keyword", keyword)
-	req, err := http.NewRequest("GET", "https://www.google.ru/search?q="+keyword, nil)
+	req, err := http.NewRequest("GET", "https://www.google.ru/search?q="+keyword+"&hl=en", nil)
 	if err != nil {
 		return nil, nil
 	}
