@@ -16,9 +16,15 @@ func NewPostgresKeywordRepository(Conn *gorm.DB) domain.KeywordRepository {
 	return &PostgresKeywordRepository{Conn}
 }
 
-func (m *PostgresKeywordRepository) FetchKeywordsForUser(ctx context.Context, user domain.User) ([]*domain.Keyword, error) {
+func (m *PostgresKeywordRepository) FetchKeywordsForUser(ctx context.Context, user domain.User, searchKey string) ([]*domain.Keyword, error) {
 	var keywords []*domain.Keyword
-	result := m.Conn.Where("user_id = ?", user.ID).Find(&keywords)
+	var result *gorm.DB
+	query := m.Conn.Where("user_id = ?", user.ID)
+	if searchKey == "" {
+		result = query.Find(&keywords)
+	} else {
+		result = query.Where("word like ?", "%"+searchKey+"%").Find(&keywords)
+	}
 	return keywords, result.Error
 }
 

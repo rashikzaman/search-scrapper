@@ -24,7 +24,11 @@ func (a *KeywordHttpHandler) FetchUserKeywords() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id := c.MustGet("userId").(string)
 		userId, err := strconv.Atoi(id)
-		result, err := a.KeywordUserCase.FetchKeywordsForUser(c, userId)
+		if err != nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+		result, err := a.KeywordUserCase.FetchKeywordsForUser(c, userId, c.Query("search"))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

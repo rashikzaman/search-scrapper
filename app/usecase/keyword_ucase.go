@@ -19,12 +19,12 @@ func NewKeywordUseCase(a domain.KeywordRepository, b domain.UserUseCase) domain.
 	}
 }
 
-func (m *KeywordRepository) FetchKeywordsForUser(ctx context.Context, userId int) ([]*domain.Keyword, error) {
+func (m *KeywordRepository) FetchKeywordsForUser(ctx context.Context, userId int, searchKey string) ([]*domain.Keyword, error) {
 	user, err := m.UserUseCase.FetchUserById(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
-	keywords, err := m.KeywordRepository.FetchKeywordsForUser(ctx, *user)
+	keywords, err := m.KeywordRepository.FetchKeywordsForUser(ctx, *user, searchKey)
 	return keywords, err
 }
 

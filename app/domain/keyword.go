@@ -22,12 +22,12 @@ type Keyword struct {
 
 type KeywordRepository interface {
 	StoreKeywords(context.Context, [][]string, User) ([]*Keyword, error)
-	FetchKeywordsForUser(context.Context, User) ([]*Keyword, error)
+	FetchKeywordsForUser(context.Context, User, string) ([]*Keyword, error)
 	FetchPendingKeyword(ctx context.Context) (*Keyword, error)
 	UpdateKeyword(context.Context, uint, string, string, string, string, string) error
 }
 
 type KeywordUseCase interface {
 	StoreKeywordsFromFile(context.Context, io.Reader, int) ([]*Keyword, error)
-	FetchKeywordsForUser(context.Context, int) ([]*Keyword, error)
+	FetchKeywordsForUser(context.Context, int, string) ([]*Keyword, error)
 }
