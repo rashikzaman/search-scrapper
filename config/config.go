@@ -19,7 +19,10 @@ func GetConfig() (config Config) {
 		}
 		err := godotenv.Load(envFile)
 		if err != nil {
-			panic("Error loading .env file")
+			err := godotenv.Load("../../.env") //during testing
+			if err != nil {
+				panic("Error loading .env file")
+			}
 		}
 		configInstance = new(Config)
 	}
