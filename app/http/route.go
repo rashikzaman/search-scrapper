@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter() {
+func SetupRouter() *gin.Engine {
 
 	r := gin.New()
 	r.Use(gin.Logger())
@@ -62,5 +62,5 @@ func InitRouter() {
 		}
 	}
 
-	r.Run() // listen	 and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	return r
 }

@@ -14,5 +14,6 @@ func main() {
 	migration.Migrate()
 	keywordRepository := repository.NewPostgresKeywordRepository(db.GetDb())
 	scheduler.ScheduleKeywordParser(ctx, keywordRepository)
-	http.InitRouter()
+	router := http.SetupRouter()
+	router.Run()
 }
