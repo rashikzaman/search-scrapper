@@ -61,3 +61,7 @@ func (c Config) GetDatabaseConfig() DatabaseConfig {
 func (c Config) GetJwtSecretKey() string {
 	return c.getEnv("JWT_SECRET", "aaaa###")
 }
+
+func (c Config) GetServerPort() string {
+	return c.getEnv("PORT", "8080")
+}

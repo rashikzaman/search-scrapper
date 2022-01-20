@@ -5,15 +5,14 @@ import (
 	"rashik/search-scrapper/app/http"
 	"rashik/search-scrapper/app/repository"
 	"rashik/search-scrapper/app/scheduler"
+	"rashik/search-scrapper/config"
 	"rashik/search-scrapper/db"
 	"rashik/search-scrapper/db/migration"
 )
 
 func main() {
-	ctx := context.Background()
 	migration.Migrate()
-	keywordRepository := repository.NewPostgresKeywordRepository(db.GetDb())
-	scheduler.ScheduleKeywordParser(ctx, keywordRepository)
+	scheduler.ScheduleKeywordParser(context.Background(), repository.NewPostgresKeywordRepository(db.GetDb()))
 	router := http.SetupRouter()
-	router.Run()
+	router.Run(":" + config.GetConfig().GetServerPort())
 }
