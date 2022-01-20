@@ -31,35 +31,39 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 		fmt.Println("Cannot read user agents file", userAgents)
 		return
 	}
-	ticker := time.NewTicker(time.Duration(config.GetConfig().GetSchedulerInterval()) * time.Second)
+	ticker := time.NewTicker(time.Duration(config.GetConfig().GetSchedulerInterval()) * time.Millisecond)
 	go func() { //go routine
 		for range ticker.C {
 			result, err := repo.FetchPendingKeyword(ctx)
 			if err != nil {
 				fmt.Println("error fetching keywords", err)
 			} else if result != nil {
-				userAgent := userAgents[rand.Intn(len(userAgents))]
-				keyword := result.Word
-				searchResult, err := GetSearchResult(keyword, userAgent)
-				if err != nil {
-					fmt.Println("Err", err)
-				} else {
-					PrintSearchResult(searchResult, userAgent)
-					filepath := fmt.Sprintf("./public/results/result_%d.html", result.ID)
-					htmlFilePath := strings.TrimPrefix(filepath, ".")
-					err := repo.UpdateKeyword(ctx, result.ID, "completed", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalLink, htmlFilePath)
-					if err != nil {
-						fmt.Println("Error updating keyword", err)
-					} else {
-						err := storeHtml(filepath, searchResult.HtmlBody)
-						if err != nil {
-							fmt.Println("error creating html file", err)
-						}
-					}
-				}
+				go ScrapResult(ctx, repo, userAgents, result) //spawning go routine
 			}
 		}
 	}()
+}
+
+func ScrapResult(ctx context.Context, repo domain.KeywordRepository, userAgents []string, result *domain.Keyword) {
+	userAgent := userAgents[rand.Intn(len(userAgents))]
+	keyword := result.Word
+	searchResult, err := GetSearchResult(keyword, userAgent)
+	if err != nil {
+		fmt.Println("Err", err)
+	} else {
+		PrintSearchResult(searchResult, userAgent)
+		filepath := fmt.Sprintf("./public/results/result_%d.html", result.ID)
+		htmlFilePath := strings.TrimPrefix(filepath, ".")
+		err := repo.UpdateKeyword(ctx, result.ID, "completed", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalLink, htmlFilePath)
+		if err != nil {
+			fmt.Println("Error updating keyword", err)
+		} else {
+			err := storeHtml(filepath, searchResult.HtmlBody)
+			if err != nil {
+				fmt.Println("error creating html file", err)
+			}
+		}
+	}
 }
 
 func PrintSearchResult(searchResult *SearchResult, userAgent string) {

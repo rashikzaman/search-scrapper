@@ -69,11 +69,11 @@ func (c Config) GetServerPort() string {
 }
 
 func (c Config) GetSchedulerInterval() int {
-	value := c.getEnv("SCHEDULER_INTERVAL", "5")
+	value := c.getEnv("SCHEDULER_INTERVAL", "5000")
 	numb, err := strconv.Atoi(value)
 	if err != nil {
 		fmt.Println("Error converting string to int, sedning default value", err)
-		return 5
+		return 5000
 	}
 	return numb
 }
