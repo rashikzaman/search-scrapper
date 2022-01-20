@@ -26,6 +26,11 @@ Run the appliation with:
 go run main.go
 ```
 
+To Test:
+```
+go test ./...
+```
+
 Application will run on port `8080` by default. To change it, update `PORT` variable in `.env` file and restart the server.
 
 
