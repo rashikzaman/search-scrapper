@@ -35,7 +35,7 @@ When the authenticated user uploads a csv file containing keywords, those keyowr
 
 Different user-agents are used to carry out the search. Those user-agents are stored in `user_agents.txt` file. 
 
-Scheduler is run on repeat after every 5 seconds by default. To speed things up, this value can be changed by updating `SCHEDULER_INTERVAL` variable in .env file. However, make sure that you don't face ip ban by requesting too many searches in short time. 
+Scheduler is run on repeat after every 5 seconds by default. To speed things up, this value can be changed by updating `SCHEDULER_INTERVAL` variable in .env file. This value must be whole number. However, make sure that you don't face ip ban by requesting too many searches in short time. 
 
 Note that, for same keyword, the application doesn't look for cache but instead make the search again, cause search result can vary even if the search key is the same.
 

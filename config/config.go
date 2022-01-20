@@ -1,7 +1,9 @@
 package config
 
 import (
+	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -64,4 +66,14 @@ func (c Config) GetJwtSecretKey() string {
 
 func (c Config) GetServerPort() string {
 	return c.getEnv("PORT", "8080")
+}
+
+func (c Config) GetSchedulerInterval() int {
+	value := c.getEnv("SCHEDULER_INTERVAL", "5")
+	numb, err := strconv.Atoi(value)
+	if err != nil {
+		fmt.Println("Error converting string to int, sedning default value", err)
+		return 5
+	}
+	return numb
 }

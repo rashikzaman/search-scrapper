@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"rashik/search-scrapper/app/domain"
+	"rashik/search-scrapper/config"
 	"strconv"
 	"strings"
 	"time"
@@ -30,8 +31,8 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 		fmt.Println("Cannot read user agents file", userAgents)
 		return
 	}
-	ticker := time.NewTicker(5 * time.Second)
-	go func() {
+	ticker := time.NewTicker(time.Duration(config.GetConfig().GetSchedulerInterval()) * time.Second)
+	go func() { //go routine
 		for range ticker.C {
 			result, err := repo.FetchPendingKeyword(ctx)
 			if err != nil {
