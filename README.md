@@ -45,3 +45,9 @@ Scheduler is run on repeat after every 5 seconds by default. To speed things up,
 Note that, for same keyword, the application doesn't look for cache but instead make the search again, cause search result can vary even if the search key is the same.
 
 There is a sample csv file in project root named `sample_keywords.csv`. Please make sure the uploaded csv file adheres to the same format.
+
+To parse the total search result, `#result-stats` element is looked for in the html
+
+For, total ads, total divs in `#tads` elements is counted
+
+To count total link, all `a` elements is counted
