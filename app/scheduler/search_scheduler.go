@@ -44,22 +44,22 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 					"error": err,
 				}).Error("Error fetching pending keywords")
 			} else if result != nil {
-				go ScrapResult(ctx, repo, userAgents, result) //spawning go routine
+				go scrapResult(ctx, repo, userAgents, result) //spawning go routine
 			}
 		}
 	}()
 }
 
-func ScrapResult(ctx context.Context, repo domain.KeywordRepository, userAgents []string, result *domain.Keyword) {
+func scrapResult(ctx context.Context, repo domain.KeywordRepository, userAgents []string, result *domain.Keyword) {
 	userAgent := userAgents[rand.Intn(len(userAgents))]
 	keyword := result.Word
-	searchResult, err := GetSearchResult(keyword, userAgent)
+	searchResult, err := getSearchResult(keyword, userAgent)
 	if err != nil {
 		logger.GetLog().WithFields(logrus.Fields{
 			"error": err,
 		}).Error("Error getting search result")
 	} else {
-		PrintSearchResult(searchResult, userAgent)
+		printSearchResult(searchResult, userAgent)
 		filepath := fmt.Sprintf("./public/results/result_%d.html", result.ID)
 		htmlFilePath := strings.TrimPrefix(filepath, ".")
 		err := repo.UpdateKeyword(ctx, result.ID, "completed", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalLink, htmlFilePath)
@@ -78,7 +78,7 @@ func ScrapResult(ctx context.Context, repo domain.KeywordRepository, userAgents 
 	}
 }
 
-func PrintSearchResult(searchResult *SearchResult, userAgent string) {
+func printSearchResult(searchResult *SearchResult, userAgent string) {
 	logger.GetLog().WithFields(logrus.Fields{
 		"search_result": searchResult.TotalSearchResult,
 		"total_adword":  searchResult.TotalAdword,
@@ -87,19 +87,19 @@ func PrintSearchResult(searchResult *SearchResult, userAgent string) {
 	}).Debug("Scrapper Result")
 }
 
-func GetSearchResult(keyword string, userAgent string) (*SearchResult, error) {
-	data, err := GetHtml(keyword, userAgent)
+func getSearchResult(keyword string, userAgent string) (*SearchResult, error) {
+	data, err := getHtml(keyword, userAgent)
 	if err != nil {
 		logger.GetLog().WithFields(logrus.Fields{
 			"error": err,
 		}).Error("Error fetching pending keywords")
 		return nil, err
 	}
-	result, err := ParseHtml(data)
+	result, err := parseHtml(data)
 	return result, err
 }
 
-func ParseHtml(data []byte) (*SearchResult, error) {
+func parseHtml(data []byte) (*SearchResult, error) {
 	reader := bytes.NewReader(data)
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
@@ -120,7 +120,7 @@ func ParseHtml(data []byte) (*SearchResult, error) {
 	return result, nil
 }
 
-func GetHtml(keyword string, userAgent string) ([]byte, error) {
+func getHtml(keyword string, userAgent string) ([]byte, error) {
 	client := &http.Client{}
 	keyword = strings.ReplaceAll(keyword, " ", "+") //replaincing all whitespace with +
 	logrus.Debug("Keyword: ", keyword)
