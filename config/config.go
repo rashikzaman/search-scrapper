@@ -77,3 +77,7 @@ func (c Config) GetSchedulerInterval() int {
 	}
 	return numb
 }
+
+func (c Config) GetAppEnv() string {
+	return c.getEnv("APP_ENV", "development")
+}

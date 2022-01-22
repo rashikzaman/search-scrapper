@@ -10,12 +10,14 @@ import (
 	"net/http"
 	"os"
 	"rashik/search-scrapper/app/domain"
+	"rashik/search-scrapper/app/logger"
 	"rashik/search-scrapper/config"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/sirupsen/logrus"
 )
 
 type SearchResult struct {
@@ -28,7 +30,9 @@ type SearchResult struct {
 func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 	userAgents, err := readLines("./user_agents.txt")
 	if err != nil {
-		fmt.Println("Cannot read user agents file", userAgents)
+		logger.GetLog().WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Cannot read user agents file")
 		return
 	}
 	ticker := time.NewTicker(time.Duration(config.GetConfig().GetSchedulerInterval()) * time.Millisecond)
@@ -36,7 +40,9 @@ func ScheduleKeywordParser(ctx context.Context, repo domain.KeywordRepository) {
 		for range ticker.C {
 			result, err := repo.FetchPendingKeyword(ctx)
 			if err != nil {
-				fmt.Println("error fetching keywords", err)
+				logger.GetLog().WithFields(logrus.Fields{
+					"error": err,
+				}).Error("Error fetching pending keywords")
 			} else if result != nil {
 				go ScrapResult(ctx, repo, userAgents, result) //spawning go routine
 			}
@@ -49,32 +55,44 @@ func ScrapResult(ctx context.Context, repo domain.KeywordRepository, userAgents 
 	keyword := result.Word
 	searchResult, err := GetSearchResult(keyword, userAgent)
 	if err != nil {
-		fmt.Println("Err", err)
+		logger.GetLog().WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Error getting search result")
 	} else {
 		PrintSearchResult(searchResult, userAgent)
 		filepath := fmt.Sprintf("./public/results/result_%d.html", result.ID)
 		htmlFilePath := strings.TrimPrefix(filepath, ".")
 		err := repo.UpdateKeyword(ctx, result.ID, "completed", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalLink, htmlFilePath)
 		if err != nil {
-			fmt.Println("Error updating keyword", err)
+			logger.GetLog().WithFields(logrus.Fields{
+				"error": err,
+			}).Error("Error updating pending keywords")
 		} else {
 			err := storeHtml(filepath, searchResult.HtmlBody)
 			if err != nil {
-				fmt.Println("error creating html file", err)
+				logger.GetLog().WithFields(logrus.Fields{
+					"error": err,
+				}).Error("Error creating html file")
 			}
 		}
 	}
 }
 
 func PrintSearchResult(searchResult *SearchResult, userAgent string) {
-	fmt.Println("Result", searchResult.TotalSearchResult, searchResult.TotalAdword, searchResult.TotalAdword, searchResult.TotalLink)
-	fmt.Println("User agent", userAgent)
+	logger.GetLog().WithFields(logrus.Fields{
+		"search_result": searchResult.TotalSearchResult,
+		"total_adword":  searchResult.TotalAdword,
+		"total_link":    searchResult.TotalLink,
+		"user_agent":    userAgent,
+	}).Debug("Scrapper Result")
 }
 
 func GetSearchResult(keyword string, userAgent string) (*SearchResult, error) {
 	data, err := GetHtml(keyword, userAgent)
 	if err != nil {
-		fmt.Printf("Cannnot read html: %d", err)
+		logger.GetLog().WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Error fetching pending keywords")
 		return nil, err
 	}
 	result, err := ParseHtml(data)
@@ -85,7 +103,9 @@ func ParseHtml(data []byte) (*SearchResult, error) {
 	reader := bytes.NewReader(data)
 	doc, err := goquery.NewDocumentFromReader(reader)
 	if err != nil {
-		fmt.Printf("Cannot create html document, err:%d", err)
+		logger.GetLog().WithFields(logrus.Fields{
+			"error": err,
+		}).Error("Cannot create html document")
 		return nil, err
 	}
 
@@ -103,7 +123,7 @@ func ParseHtml(data []byte) (*SearchResult, error) {
 func GetHtml(keyword string, userAgent string) ([]byte, error) {
 	client := &http.Client{}
 	keyword = strings.ReplaceAll(keyword, " ", "+") //replaincing all whitespace with +
-	fmt.Println("keyword", keyword)
+	logrus.Debug("Keyword: ", keyword)
 	req, err := http.NewRequest("GET", "https://www.google.ru/search?q="+keyword+"&hl=en", nil)
 	if err != nil {
 		return nil, nil

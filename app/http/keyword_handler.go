@@ -1,12 +1,13 @@
 package http
 
 import (
-	"fmt"
 	"net/http"
 	"rashik/search-scrapper/app/domain"
+	"rashik/search-scrapper/app/logger"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type KeywordHttpHandler struct {
@@ -44,7 +45,9 @@ func (a *KeywordHttpHandler) StoreKeywords() gin.HandlerFunc {
 		userId, err := strconv.Atoi(id)
 		file, _, err := c.Request.FormFile("file")
 		if err != nil {
-			fmt.Println("Unable to open the file", err)
+			logger.GetLog().WithFields(logrus.Fields{
+				"error": err,
+			}).Error("Unable to open the file")
 		}
 		result, err := a.KeywordUserCase.StoreKeywordsFromFile(c, file, userId)
 
