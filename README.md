@@ -7,6 +7,33 @@ It is build with `golang` and `postgres` is used for database.
 
 ## Installation
 
+Create a .env file and enter proper postgres db config:
+
+```sh
+cp .env.example .env
+```
+
+### With Docker and docker-compose : 
+
+Create a `.docker.env` file from `.docker.env.example`
+
+```sh
+cp .docker.env.example .docker.env
+```
+
+`.docker-env` will hold postgres database name, username and password. Make sure these values are same with .env file entries.
+`POSTGRES_HOST` in `.env` file should be `db`.
+
+Build and run the containers with 
+
+```
+docker-compose up
+```
+
+After successful container build, Golang application shoule be avaiable at PORT `8080` and POSTGRES port will be at `5442`
+
+### Without Docker
+
 Please make sure you have `golang` and `postgres` installed on your system. 
 
 After cloning the repository, install project dependencies by running:
@@ -26,12 +53,12 @@ Run the appliation with:
 go run main.go
 ```
 
+Application will run on port `8080` by default. To change it, update `PORT` variable in `.env` file and restart the server.
+
 To Test:
 ```
 go test ./...
 ```
-
-Application will run on port `8080` by default. To change it, update `PORT` variable in `.env` file and restart the server.
 
 
 ## How it works
