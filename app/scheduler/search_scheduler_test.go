@@ -8,7 +8,7 @@ import (
 
 func TestParseHtmlWithLink(t *testing.T) {
 	html := "<a>Hello</a>"
-	result, err := ParseHtml([]byte(html))
+	result, err := parseHtml([]byte(html))
 	if err != nil {
 		t.Errorf("Error parsing html: %d", err)
 	} else {
@@ -18,7 +18,7 @@ func TestParseHtmlWithLink(t *testing.T) {
 
 func TestParseHtmlWithDivAd(t *testing.T) {
 	html := "<div><div></div><div id='tads'><div></div></div></div>"
-	result, err := ParseHtml([]byte(html))
+	result, err := parseHtml([]byte(html))
 	if err != nil {
 		t.Errorf("Error parsing html: %d", err)
 	} else {
